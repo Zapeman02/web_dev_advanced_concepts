@@ -31,6 +31,16 @@ const venueModel = {
             console.log(err)
             throw err
         }
+    },
+    createVenue : async function(name,url,district){
+        try{
+            const query = 'INSERT INTO venues (name,url,district) VALUES($1,$2,$3)'
+            const res = await client.query(query,[name,url,district])
+            return res.rows
+        }catch(err){
+            console.error("error in createvenue", err.stack)
+            throw err
+        }
     }
 
 
