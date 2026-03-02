@@ -1,4 +1,5 @@
-const {client, connectDB, disconnectDB} = require('./db')
+const path = require('path')
+const {client, connectDB, disconnectDB} = require(path.join(__dirname, 'db.js'))
 const fs = require('fs').promises
 
 async function setupDb(){
@@ -18,7 +19,7 @@ setupDb();
 async function createVenueTable() {
     
 
-    //await client.query('DROP TABLE venues')
+    await client.query('DROP TABLE IF EXISTS venues')
     // create table venues
 
     const createTableQuery = `
@@ -36,8 +37,7 @@ async function createVenueTable() {
 async function fillTableVenues() {
     // read file
     // fill table
-
-    const data = JSON.parse(await fs.readFile('db/stores.json', 'utf-8'));
+    const data = JSON.parse(await fs.readFile(path.join(__dirname, 'stores.json'), 'utf-8'));
 
     const insertQuery = `
     INSERT INTO venues (name, url, district)
