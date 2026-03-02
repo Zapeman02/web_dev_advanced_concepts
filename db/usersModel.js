@@ -9,6 +9,7 @@ const usersModel = {
             console.log(err)
             throw err
         }
-    }
+    },
+     
 }
 module.exports = usersModel

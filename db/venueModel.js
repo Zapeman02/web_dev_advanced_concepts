@@ -23,6 +23,15 @@ const venueModel = {
             throw err
         }
     },
+    getAllStoreNames : async function(){
+        try{
+            const res = await client.query('SELECT name FROM venues')
+            return res.rows
+        }catch(err){
+            console.log(err)
+            throw err
+        }
+    }
 
 
 }
