@@ -1,6 +1,5 @@
 //fetch från våra egna apier, och html uppbyggnad
 //tim
-
 function fetchAllStores(){
     fetch('api/stores')
     .then(res=>res.json())
@@ -15,3 +14,19 @@ function fetchAllStores(){
     })
 }
 fetchAllStores()
+
+
+function fetchUser(name){
+    fetch('api/users/' + name)
+    .then(res => {
+        if (!res.ok) throw new Error("User not found");
+        return res.json();
+    })
+    .then(data => {
+        const userElement = document.getElementById("user")
+
+        userElement.innerText = "Welcome " + name
+        console.log("Data from db," + data)
+    })
+}
+fetchUser('testadmin')

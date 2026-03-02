@@ -45,6 +45,19 @@ app.get('/api/stores', async (req,res) => {
         console.log(err)
     }
 })
+app.get('/api/users/:name', async (req, res) => {
+    try {
+        const user = await usersModel.getUser(req.params.name);
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server error");
+    }
+})
 const startServer = async () => {
     await connectDB()
     app.listen(PORT, () => {
