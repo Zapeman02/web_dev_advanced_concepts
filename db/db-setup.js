@@ -52,3 +52,17 @@ async function fillTableVenues() {
         }
     }
 }
+async function createUserTable(){
+    await client.query('DROP TABLE IF EXISTS user')
+    //create user table
+
+    const createUserTable = `
+    CREATE TABLE IF NOT EXISTS users(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    passowrd TEXT NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL
+    );`;
+
+    await client.query(createUserTable)
+}
