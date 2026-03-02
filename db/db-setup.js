@@ -9,6 +9,9 @@ async function setupDb(){
         await createVenueTable()
         await fillTableVenues()
         console.log('DB is setup')
+
+        await createUserTable()
+        await fillUsersTable()
         await disconnectDB()
     } catch (err){
         console.log('error when setting up db', err.stack)
@@ -53,16 +56,36 @@ async function fillTableVenues() {
     }
 }
 async function createUserTable(){
-    await client.query('DROP TABLE IF EXISTS user')
+    await client.query('DROP TABLE IF EXISTS users')
     //create user table
 
     const createUserTable = `
     CREATE TABLE IF NOT EXISTS users(
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    passowrd TEXT NOT NULL,
+    username VARCHAR(100) NOT NULL,
+    password TEXT NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL
     );`;
 
     await client.query(createUserTable)
+    console.log("Users created!")
+}
+async function fillUsersTable(){
+    
+        const testUser = {
+            username : 'testadmin',
+            password : 'password123',
+            email : 'test@example.com'
+        }
+         const insertQuery=`
+         INSERT INTO users (username,password,email)
+         VALUES($1,$2,$3)
+         ON CONFLICT(email) DO NOTHING
+         ` 
+         try{
+            await client.query(insertQuery, [testUser.username,testUser.password,testUser.email])
+            console.log("testuser created")
+         }catch(err){
+        console.log(err)
+    }
 }
