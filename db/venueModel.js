@@ -36,6 +36,7 @@ const venueModel = {
         try{
             const query = 'INSERT INTO venues (name,url,district) VALUES($1,$2,$3) RETURNING*'
             const res = await client.query(query,[name,url,district])
+            //only return the added data
             return res.rows[0]
         }catch(err){
             console.error("error in createvenue", err.stack)
@@ -46,10 +47,21 @@ const venueModel = {
         try{
             const query = 'UPDATE venues SET NAME = $1, url = $2, district=$3 WHERE id = $4 RETURNING*'
             const res = await client.query(query,[name,url,district,id])
+            //only return the eccential data, not all. This case the updated one
             return res.rows[0]
         }catch(err){
-            console.error("Error in updatevenue",err.stack)
+            console.error("Error in updatevenue ",err.stack)
             throw err
+        }
+    },
+    deleteVenue : async function(id){
+        try{
+            const query = 'DELETE FROM venues WHERE id = $1'
+            const res = await client.query(query,[id])
+            //return if rows affected is greater than 0
+            return res.rowCount>0
+        }catch(err){
+            console.error("Error in deleting " , err.stack)
         }
     }
 }
