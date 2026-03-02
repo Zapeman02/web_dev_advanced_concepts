@@ -36,10 +36,10 @@ app.get('/api/users', async (req,res)=>{
         console.log(err)
     }
 })
-//test to see only store names
+//to get all the store names.
 app.get('/api/stores', async (req,res) => {
     try{
-        const stores = await venueModelModel.getAllStoreNames()
+        const stores = await venueModel.getAllStoreNames()
         res.json(stores)
     }catch(err){
         console.log(err)
