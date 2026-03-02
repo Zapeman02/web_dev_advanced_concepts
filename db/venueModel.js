@@ -34,16 +34,24 @@ const venueModel = {
     },
     createVenue : async function(name,url,district){
         try{
-            const query = 'INSERT INTO venues (name,url,district) VALUES($1,$2,$3)'
+            const query = 'INSERT INTO venues (name,url,district) VALUES($1,$2,$3) RETURNING*'
             const res = await client.query(query,[name,url,district])
-            return res.rows
+            return res.rows[0]
         }catch(err){
             console.error("error in createvenue", err.stack)
             throw err
         }
+    },
+    updateVenue : async function(id,name,url,district){
+        try{
+            const query = 'UPDATE venues SET NAME = $1, url = $2, district=$3 WHERE id = $4 RETURNING*'
+            const res = await client.query(query,[name,url,district,id])
+            return res.rows[0]
+        }catch(err){
+            console.error("Error in updatevenue",err.stack)
+            throw err
+        }
     }
-
-
 }
 
 module.exports = venueModel
