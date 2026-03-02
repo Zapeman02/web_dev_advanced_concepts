@@ -13,7 +13,7 @@ npm install
 
 **2. Start the Postgres container**
 ```bash
-docker build -t project-postgres-image .
+docker build -f Dockerfile.postgres -t project-postgres-image .
 docker run -d -p 5432:5432 --name project-postgres-container project-postgres-image
 ```
 > If you've run this before, just do `docker start project-postgres-container`
