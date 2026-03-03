@@ -1,20 +1,15 @@
 
 //fetch från våra egna apier, och html uppbyggnad
 //tim
-function fetchAllStores(){
-    fetch('api/stores')
+function fetchAllVenues(){
+    fetch('api/venues')
     .then(res=>res.json())
     .then(data=>{
-        const container = document.getElementById('container')
-
-        container.innerHTML = "<h2>Our stores:</h2>"
-
-        data.forEach(store =>{
-            container.innerHTML += `<p>${store.name}</p>`
-        })
+       createAllVenueItems(data)
     })
+
 }
-fetchAllStores()
+fetchAllVenues()
 
 
 function fetchUser(name){
@@ -24,15 +19,48 @@ function fetchUser(name){
         return res.json();
     })
     .then(data => {
-        const userElement = document.getElementById("user")
-
-        userElement.innerText = "Welcome " + name
         console.log("Data from db," + data)
     })
 }
-fetchUser('testadmin')
+//fetchUser('testadmin')
 
 
 
 
 //Kasper HTML moduler med js
+
+function createAllVenueItems(venue){
+    const main = document.getElementById("main")
+    const container = document.createElement("div")
+    container.classList.add("venueItemContainer")
+    main.appendChild(container)
+    
+    venue.forEach(venue =>{
+            createVenueItem(container, venue)
+        });
+}
+
+function createVenueItem(container, venue){
+    const venueItem = document.createElement("div")
+    venueItem.id = `venueItem_${venue.id}`
+    venueItem.classList = `venueItem`
+
+    if(venue.url){
+        venueItem.addEventListener('click', e => {
+            window.location.href = venue.url
+        })
+        venueItem.setAttribute('style', 'cursor: pointer;')
+    }
+
+    const nameP = document.createElement("p")
+    nameP.innerText = venue.name
+
+    const districtP = document.createElement("p")
+    districtP.innerText = venue.district
+
+    venueItem.appendChild(nameP)
+    venueItem.appendChild(districtP)
+
+    container.appendChild(venueItem)
+
+}

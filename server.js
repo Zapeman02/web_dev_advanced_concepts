@@ -37,7 +37,7 @@ app.get('/api/users', async (req,res)=>{
     }
 })
 //to get all the store names.
-app.get('/api/stores', async (req,res) => {
+app.get('/api/storeNames', async (req,res) => {
     try{
         const stores = await venueModel.getAllStoreNames()
         res.json(stores)
