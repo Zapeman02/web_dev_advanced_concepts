@@ -22,10 +22,10 @@ app.post('/api/venues/new', express.json(), async (req,res) => {
     try{
         const {name, url, district} = req.body;
         const results = await venueModel.createVenue(name, url, district)
-        res.status(200).json({message: 'succesfully posted: ', results})
+        res.status(200).json({message: 'succesfully posted', results})
     }
     catch(err) {
-        res.status(500).json({message: 'could not post venues',error: err})
+        res.status(500).json({message: 'could not post venue',error: err})
     }
 })
 
@@ -34,11 +34,39 @@ app.put('/api/venues/:id', express.json(), async (req, res) => {
         const venueId = req.params.id;
         const { name, url, district} = req.body;
         const results = await venueModel.updateVenue(venueId, name, url, district)
-        res.status(200).json({message: 'succesfully updated: ', results})
+        res.status(200).json({message: 'succesfully updated', results})
     } catch(err){
         res.status(500).json({message: 'could not update venue', error: err})
     }
 } )
+app.delete('/api/venues/:id', express.json(), async (req,res) => {
+    try {
+        const venueId = req.params.id;
+        const result = await venueModel.deleteVenue(venueId)
+        res.status(200).json({message: 'succesfully deleted', result})
+    } 
+    catch(err) {
+        res.status(500).json({message: 'could not delete venue', error: err})
+    }
+})
+
+app.get('api/users', async (req,res) => {
+    try{
+        const users = await usersModel.getAllUsers();
+        res.status(200).json(users)
+    } catch(err){
+        res.status(500).json({message: 'Could not get users', error: err})
+    }
+})
+app.get('api/user/:name', express.json(), async (req,res) => {
+    try{
+        const name = req.params.name
+        const user = await usersModel.getUser(name)
+        res.status(200).json(users)
+    }catch(err) {
+        res.status(500).json({message: 'Could not get user', error: err})
+    }
+})
 /*
 //test to see only links
 app.get('/api/venues/links', async(req,res)=>{
