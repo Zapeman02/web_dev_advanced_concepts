@@ -13,11 +13,33 @@ app.use('/', express.static('public'));
 app.get('/api/venues', async (req,res) => {
     try{
         const venues = await venueModel.getAllVenues();
-        res.json(venues);
+        res.status(200).json(venues);
     }catch(err){
         res.status(500).json({message: 'could not get venues', error: err});
     }
 })
+app.post('/api/venues/new', express.json(), async (req,res) => {
+    try{
+        const {name, url, district} = req.body;
+        const results = await venueModel.createVenue(name, url, district)
+        res.status(200).json({message: 'succesfully posted: ', results})
+    }
+    catch(err) {
+        res.status(500).json({message: 'could not post venues',error: err})
+    }
+})
+
+app.put('/api/venues/:id', express.json(), async (req, res) => {
+    try{
+        const venueId = req.params.id;
+        const { name, url, district} = req.body;
+        const results = await venueModel.updateVenue(venueId, name, url, district)
+        res.status(200).json({message: 'succesfully updated: ', results})
+    } catch(err){
+        res.status(500).json({message: 'could not update venue', error: err})
+    }
+} )
+/*
 //test to see only links
 app.get('/api/venues/links', async(req,res)=>{
     try{
@@ -57,7 +79,7 @@ app.get('/api/users/:name', async (req, res) => {
         console.error(err);
         res.status(500).send("Server error");
     }
-})
+})*/
 const startServer = async () => {
     await connectDB()
     app.listen(PORT, () => {
