@@ -4,12 +4,14 @@ const pages = {
     LOGIN: 'login'
 }
 let CURRENT_PAGE = pages.HOME
+let CURRENT_USER = null
 
 // ================== MAIN ENTRY POINT ===================  
 async function createHtmlDom(){
 // act as main
 // build html dom with header then all venues and then footer
     try{
+        clearBody();
         createHeader();
         renderMain();
 
@@ -21,7 +23,7 @@ async function createHtmlDom(){
         // default show home with venues
 
     }catch(err){
-        console.log('Error building DOM:', err)
+        console.log('Error building DOM:', err);
     }
 }
 
@@ -51,7 +53,21 @@ async function renderMain(){
 
 function clearMain(){
     const main = document.getElementById('main');
-    main.innerHTML = ''
+    main.innerHTML = '';
+}
+function clearHeader(){
+    const header = document.getElementById('header');
+    header.innerHTML = '';
+}
+function clearFooter(){
+    const footer = document.getElementById('footer');
+    footer.innerHTML = '';
+}
+
+function clearBody(){
+    clearMain();
+    clearHeader();
+    clearFooter();
 }
 
 async function loadHome() {
@@ -61,13 +77,12 @@ async function loadHome() {
 }
 
 function loadLogin(){
-    const div = document.createElement('div');
-    div.innerText = 'Go Home';
-    div.addEventListener('click', () => {
-        navigateTo(pages.HOME);
-    })
-    const main = document.getElementById('main');
-    main.appendChild(div);
+    createLogin();
+}
+
+function reRenderFullPage(){
+    CURRENT_PAGE = pages.HOME;
+    createHtmlDom();
 }
 
 
@@ -78,9 +93,20 @@ function loadLogin(){
 // Returnera jsonobject
 //tim
 async function fetchAllVenues(){
-    const res = await fetch('api/venues')
-    if(!res.ok) throw new Error('Failed to fetch venues')
-    return res.json()
+    const res = await fetch('api/venues');
+    if(!res.ok) throw new Error('Failed to fetch venues');
+    return res.json();
+}
+
+function fetchLogin(username, password){
+    //TODO login user and return user object
+
+    //temp test user REMOVE
+    return {
+        username:username,
+        password:password,
+        isAdmin:true
+    };
 }
 
 
@@ -103,7 +129,7 @@ function fetchUser(name){
 //Kasper HTML moduler med js
 
 function createFilterBar(){
-
+ //TODO
 }
 
 function createAllVenueItems(venue){
@@ -155,18 +181,99 @@ function createHeader(){
     headerText.classList.add('headerText');
     headerText.innerText = "JKPGCITY";
     headerText.addEventListener('click', () => navigateTo(pages.HOME));
+    headerText.setAttribute('style', 'cursor: pointer;');
 
     container.appendChild(headerText);
 
-    const button = document.createElement('button');
-    button.classList.add('headerLoginButton');
-    button.innerText = 'Login';
-    button.addEventListener('click', () => navigateTo(pages.LOGIN));
+    const loginContainer = document.createElement('div');
 
-    container.appendChild(button);
+    createLoginButton(loginContainer);
+    createLoggedInText(loginContainer);
+
+    container.appendChild(loginContainer)
 
     const header = document.getElementById('header');
     header.appendChild(container);
 }
 
+function createLogin(){
+    const container = document.createElement('div');
+    container.classList.add('loginFormContainer');
+
+    const form = document.createElement('form');
+    form.classList.add('loginForm');
+
+    const text = document.createElement('h2');
+    text.classList.add('loginFormText')
+    text.innerText = 'Login'
+    
+    const userNameInput = document.createElement('input');
+    userNameInput.classList.add('loginUsernameInput');
+    userNameInput.classList.add('input');
+    userNameInput.setAttribute('type', 'text');
+    userNameInput.setAttribute('placeHolder', 'username');
+
+    const passwordInput = document.createElement('input');
+    passwordInput.classList.add('loginUsernameInput');
+    passwordInput.classList.add('input');
+    passwordInput.setAttribute('type', 'password');
+    passwordInput.setAttribute('placeHolder', 'password');
+
+    const loginButton = document.createElement('button');
+    loginButton.classList.add('loginFormButton');
+    loginButton.innerText = "Login";
+    loginButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleLoginClick(userNameInput.value, passwordInput.value);
+    });
+
+    form.appendChild(text);
+    form.appendChild(userNameInput);
+    form.appendChild(passwordInput);
+    form.appendChild(loginButton);
+
+    container.appendChild(form);
+    const main = document.getElementById('main');
+    main.appendChild(container);
+}
+
+function createLoginButton(container){
+    const button = document.createElement('button');
+    button.classList.add('headerLoginButton');
+
+    if(!CURRENT_USER){
+        button.innerText = 'Login';
+        button.addEventListener('click', () => navigateTo(pages.LOGIN));
+    }else{
+        button.innerText = 'Logout';
+        button.addEventListener('click', () => handleLogout());
+    }
+
+    container.appendChild(button);
+}
+
+function createLoggedInText(container){
+    if(CURRENT_USER){
+        const text = document.createElement('p')
+        text.classList.add('loggedInText')
+        text.innerText = `logged in as: ${CURRENT_USER.username}`
+        container.appendChild(text)
+    }
+}
+
+async function handleLoginClick(username, password){
+    try{
+        const res = await fetchLogin(username, password);
+        console.log('Login successful:', res);
+        CURRENT_USER = res;
+        reRenderFullPage()
+    }catch(err){
+        alert('Login failed: ' + err.message);
+    }
+}
+
+function handleLogout(){
+    CURRENT_USER = null;
+    reRenderFullPage()
+}
 

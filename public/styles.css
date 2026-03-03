@@ -1,6 +1,15 @@
 body{
+    background-color: beige;
     margin: 0;
+    align-items: center;
+    align-content: center;
 }
+
+button{
+    cursor: pointer;
+}
+
+/* header */
 
 header{
     margin: 0;
@@ -9,13 +18,21 @@ header{
 
 .headerContainer{
     margin: 0;
-    background-color: beige;
+    background-color: wheat;
     padding: 2rem;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     text-align: center;
     align-items: center;
+}
+
+.headerLoginContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: brown;
 }
 
 .headerLoginButton{
@@ -28,6 +45,9 @@ header{
     color: wheat;
 }
 
+
+
+/* home */
 .venueItemContainer{
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -41,4 +61,40 @@ header{
     border-radius: 8px;
     padding: 16px;
     text-align: center;
+}
+
+
+/* login */
+.loginFormContainer{
+    width: 100%;
+    margin: auto;
+    margin-top: 2rem;
+}
+
+.loginForm{
+    margin: auto;
+    padding: 1rem;
+    background-color: aliceblue;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 80vw;
+    max-width: 300px;
+    border-radius: 8px;
+}
+
+.input{
+    margin: 4px;
+    font-size: medium;
+}
+
+.loginFormButton{
+    padding: 0.5rem;
+    background-color: brown;
+    border-style: none;
+    border-radius: 8px;
+    margin-top: 8px;
+
+    font-size: medium;
+    color: wheat;
 }
