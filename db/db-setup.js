@@ -12,6 +12,7 @@ async function setupDb(){
 
         await createUserTable()
         await fillUsersTable()
+        
         await disconnectDB()
     } catch (err){
         console.log('error when setting up db', err.stack)
