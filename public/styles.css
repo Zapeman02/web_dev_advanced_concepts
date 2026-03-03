@@ -1,3 +1,33 @@
+body{
+    margin: 0;
+}
+
+header{
+    margin: 0;
+    width: 100%;
+}
+
+.headerContainer{
+    margin: 0;
+    background-color: beige;
+    padding: 2rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: center;
+    align-items: center;
+}
+
+.headerLoginButton{
+    padding: 1rem;
+    background-color: brown;
+    border-style: none;
+    border-radius: 8px;
+
+    font-size: medium;
+    color: wheat;
+}
+
 .venueItemContainer{
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -10,6 +40,5 @@
     color: wheat;
     border-radius: 8px;
     padding: 16px;
-    /*max-width: 250px;*/
     text-align: center;
 }

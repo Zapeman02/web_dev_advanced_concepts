@@ -55,6 +55,7 @@ function clearMain(){
 }
 
 async function loadHome() {
+    createFilterBar();
     const venues = await fetchAllVenues();
     createAllVenueItems(venues);
 }
@@ -67,20 +68,6 @@ function loadLogin(){
     })
     const main = document.getElementById('main');
     main.appendChild(div);
-}
-
-function createHeader(){
-    const div = document.createElement('div');
-    div.innerText = 'This is the header';
-    const header = document.getElementById('header');
-    header.appendChild(div)
-
-    const button = document.createElement('button')
-    button.innerText = 'Login'
-    button.addEventListener('click', () => {
-        navigateTo(pages.LOGIN)
-    })
-    header.appendChild(button)
 }
 
 
@@ -114,6 +101,10 @@ function fetchUser(name){
 
 // ================== DOM BUILDERS =====================
 //Kasper HTML moduler med js
+
+function createFilterBar(){
+
+}
 
 function createAllVenueItems(venue){
     const main = document.getElementById("main");
@@ -156,5 +147,26 @@ function handleVenueClick(url){
     window.location.href = url;
 }
 
+function createHeader(){
+    const container = document.createElement('div');
+    container.classList.add('headerContainer');
+
+    const headerText = document.createElement('h1');
+    headerText.classList.add('headerText');
+    headerText.innerText = "JKPGCITY";
+    headerText.addEventListener('click', () => navigateTo(pages.HOME));
+
+    container.appendChild(headerText);
+
+    const button = document.createElement('button');
+    button.classList.add('headerLoginButton');
+    button.innerText = 'Login';
+    button.addEventListener('click', () => navigateTo(pages.LOGIN));
+
+    container.appendChild(button);
+
+    const header = document.getElementById('header');
+    header.appendChild(container);
+}
 
 
