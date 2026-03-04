@@ -12,9 +12,13 @@ const SECRET = 'YouWillNeverGuessThis'; //change this in production (not that it
 
 const sessions = {};
 app.use(cookieParser(SECRET));
+
 //arvid
 //routes mellan client och server genom venue functioner.
 const PORT = 8080
+
+
+
 
 app.use('/', express.static('public'));
 
@@ -30,9 +34,18 @@ app.get('/api/venues', async (req,res) => {
 
 app.post('/api/venues/new', express.json(), async (req,res) => {
     try{
-        const {name, url, district} = req.body;
-        const results = await venueModel.createVenue(name, url, district)
-        res.status(200).json({message: 'succesfully posted', results})
+        //fetch token
+        const token = req.signedCookies.authToken;
+        //if token and session is admin
+        if (token && sessions[token] && sessions[token].isAdmin) {
+
+            const {name, url, district} = req.body;
+            const results = await venueModel.createVenue(name, url, district)
+            res.status(200).json({message: 'succesfully posted', results})
+
+        } else {
+            res.status(401).json({message: 'Unauthorized'})
+        }
     }
     catch(err) {
         res.status(500).json({message: 'could not post venue',error: err})
@@ -41,10 +54,17 @@ app.post('/api/venues/new', express.json(), async (req,res) => {
 
 app.put('/api/venues/:id', express.json(), async (req, res) => {
     try{
-        const venueId = req.params.id;
-        const { name, url, district} = req.body;
-        const results = await venueModel.updateVenue(venueId, name, url, district)
-        res.status(200).json({message: 'succesfully updated', results})
+        const token = req.signedCookies.authToken;
+        if (token && sessions[token] && sessions[token].isAdmin) {
+
+            const venueId = req.params.id;
+            const { name, url, district} = req.body;
+            const results = await venueModel.updateVenue(venueId, name, url, district)
+            res.status(200).json({message: 'succesfully updated', results})
+        } else{
+            res.status(401).json({message: 'Unauthorized'})
+        }
+        
     } catch(err){
         res.status(500).json({message: 'could not update venue', error: err})
     }
@@ -52,9 +72,15 @@ app.put('/api/venues/:id', express.json(), async (req, res) => {
 
 app.delete('/api/venues/:id', express.json(), async (req,res) => {
     try {
-        const venueId = req.params.id;
-        const result = await venueModel.deleteVenue(venueId)
-        res.status(200).json({message: 'succesfully deleted', result})
+        const token = req.signedCookies.authToken;
+        if (token && sessions[token] && sessions[token].isAdmin) {
+            const venueId = req.params.id;
+            const result = await venueModel.deleteVenue(venueId)
+            res.status(200).json({message: 'succesfully deleted', result})
+        } else{
+            res.status(401).json({message: 'Unauthorized'})
+        }
+        
     } 
     catch(err) {
         res.status(500).json({message: 'could not delete venue', error: err})
@@ -98,6 +124,14 @@ app.post('api/login', express.json(), async(req,res) =>{
         res.status(500).json({message: 'Could not log in', error: err})
     }
 })
+app.get('/logout', (req, res) => {
+    const token = req.signedCookies.authToken;
+    if (token) {
+        delete sessions[token];
+    }
+    res.clearCookie('authToken');
+    res.redirect('/');
+});
 
 
 /*
