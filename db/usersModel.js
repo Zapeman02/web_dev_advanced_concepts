@@ -13,7 +13,7 @@ const usersModel = {
     getUser : async function(name){
         try{
             const res = await client.query('SELECT * FROM users WHERE username = $1',[name])
-            return res.rows
+            return res.rows[0]
         }catch(err){
             console.log(err)
             throw err
