@@ -8,11 +8,11 @@ async function setupDb(){
         await connectDB()
         await createVenueTable()
         await fillTableVenues()
-        console.log('DB is setup')
 
         await createUserTable()
         await fillUsersTable()
         
+        console.log('DB is setup')
         await disconnectDB()
     } catch (err){
         console.log('error when setting up db', err.stack)
@@ -65,7 +65,8 @@ async function createUserTable(){
     id SERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
     password TEXT NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL
+    email VARCHAR(255) UNIQUE NOT NULL,
+    isAdmin BOOLEAN NOT NULL DEFAULT FALSE
     );`;
 
     await client.query(createUserTable)
@@ -73,18 +74,26 @@ async function createUserTable(){
 }
 async function fillUsersTable(){
     
-        const testUser = {
+        const testUserAdmin = {
             username : 'testadmin',
             password : 'password123',
-            email : 'test@example.com'
+            email : 'test@example.com',
+            isAdmin : true
+        }
+        const testUserNotAdmin = {
+            username: 'defaultuser',
+            password : 'password123',
+            email : 'test@test.com',
+            isAdmin : false
         }
          const insertQuery=`
-         INSERT INTO users (username,password,email)
-         VALUES($1,$2,$3)
+         INSERT INTO users (username,password,email,isAdmin)
+         VALUES($1,$2,$3,$4)
          ON CONFLICT(email) DO NOTHING
          ` 
          try{
-            await client.query(insertQuery, [testUser.username,testUser.password,testUser.email])
+            await client.query(insertQuery, [testUserAdmin.username,testUserAdmin.password,testUserAdmin.email,testUserAdmin.isAdmin])
+            await client.query(insertQuery,[testUserNotAdmin.username,testUserNotAdmin.password,testUserNotAdmin.email,testUserNotAdmin.isAdmin])
             console.log("testuser created")
          }catch(err){
         console.log(err)
