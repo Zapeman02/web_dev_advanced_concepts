@@ -3,6 +3,15 @@ const app = express();
 const {connectDB} = require('./db/db');
 const venueModel = require('./db/venueModel');
 const usersModel = require('./db/usersModel')
+
+//cookies
+const cookieParser = require('cookie-parser');
+const crypto = require('crypto');
+
+const SECRET = 'YouWillNeverGuessThis'; //change this in production (not that it will be)!!!!!!!!!!
+
+const sessions = {};
+app.use(cookieParser(SECRET));
 //arvid
 //routes mellan client och server genom venue functioner.
 const PORT = 8080
@@ -18,6 +27,7 @@ app.get('/api/venues', async (req,res) => {
         res.status(500).json({message: 'could not get venues', error: err});
     }
 })
+
 app.post('/api/venues/new', express.json(), async (req,res) => {
     try{
         const {name, url, district} = req.body;
@@ -38,7 +48,8 @@ app.put('/api/venues/:id', express.json(), async (req, res) => {
     } catch(err){
         res.status(500).json({message: 'could not update venue', error: err})
     }
-} )
+})
+
 app.delete('/api/venues/:id', express.json(), async (req,res) => {
     try {
         const venueId = req.params.id;
@@ -67,6 +78,28 @@ app.get('api/user/:name', express.json(), async (req,res) => {
         res.status(500).json({message: 'Could not get user', error: err})
     }
 })
+
+app.post('api/login', express.json(), async(req,res) =>{
+    try{
+        const { username, password } = req.body;
+
+        const user = await usersModel.getUser(username)
+        if (user && password === user.password){
+
+            const token = crypto.randomBytes(64).toString('hex');
+            sessions[token] = { user: user.username, isAdmin: user.isAdmin };
+            return res
+            .cookie('authToken', token, { signed: true, httpOnly: true })
+            .json({user:{username: user.username, isAdmin: user.isAdmin}});
+        }
+        res.status(401).json({message: 'Invalid username or password'})
+
+    } catch(err){
+        res.status(500).json({message: 'Could not log in', error: err})
+    }
+})
+
+
 /*
 //test to see only links
 app.get('/api/venues/links', async(req,res)=>{
