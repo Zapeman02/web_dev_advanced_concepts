@@ -116,7 +116,7 @@ app.get('/api/user/:name', express.json(), async (req,res) => {
     try{
         const name = req.params.name
         const user = await usersModel.getUser(name)
-        res.status(200).json(users)
+        res.status(200).json(user)
     }catch(err) {
         res.status(500).json({message: 'Could not get user', error: err})
     }
@@ -130,7 +130,7 @@ app.post('/api/login', express.json(), async(req,res) =>{
         if (user && password === user.password){
 
             const token = crypto.randomBytes(64).toString('hex');
-            sessions[token] = { user: user.username, isAdmin: user.isAdmin };
+            sessions[token] = { username: user.username, isAdmin: user.isAdmin };
             return res
             .cookie('authToken', token, { signed: true, httpOnly: true })
             .json({user:{username: user.username, isAdmin: user.isAdmin}});
@@ -151,7 +151,6 @@ app.get('/api/logout', (req, res) => {
 
         res.clearCookie('authToken');
         res.status(200).json({message: 'Logged out successfully'})
-        res.redirect('/');
 
     } catch(err) {
         res.status(500).json({message: 'Could not log out', error: err})
