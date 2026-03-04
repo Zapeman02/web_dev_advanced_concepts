@@ -4,7 +4,8 @@
   "description": "project for the course webDev",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [
     "jth",
@@ -20,5 +21,13 @@
     "express": "^5.2.1",
     "fs": "^0.0.1-security",
     "pg": "^8.19.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zapeman02/web_dev_advanced_concepts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Zapeman02/web_dev_advanced_concepts/issues"
+  },
+  "homepage": "https://github.com/Zapeman02/web_dev_advanced_concepts#readme"
 }

@@ -99,14 +99,50 @@ async function fetchAllVenues(){
 }
 
 function fetchLogin(username, password){
-    //TODO login user and return user object
-
+    //TODO login user and return user object and authToken
+    /* example
+    fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`  // server verifies THIS
+        },
+        body: JSON.stringify({username,password}),
+        credentials: 'include'
+    })
+        if(!res.ok) throw new Error('Invalid username or password')
+        return res.json()
+    */
+        
     //temp test user REMOVE
-    return {
+    /*return {user:{
         username:username,
         password:password,
         isAdmin:true
-    };
+    }};*/
+    
+}
+
+function fetchCreateVenue(name, url, district){
+    // fetch create venue route from server and send token with it
+
+    /* example
+    fetch('/api/venues/new', {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${token}`  // server verifies THIS
+        },
+        body: JSON.stringify({name, url, district}),
+        credentials: 'include'
+    })
+        if(!res.ok) throw new Error('Invalid Venue Values')
+        return res.json()
+    */
+}
+function fetchUpdateVenue(){
+    // fetch update venue route from server and send token with it
+}
+function fetchDeleteVenue(){
+    // fetch delete venue route from server and send token with it
 }
 
 
@@ -254,26 +290,34 @@ function createLoginButton(container){
 
 function createLoggedInText(container){
     if(CURRENT_USER){
-        const text = document.createElement('p')
-        text.classList.add('loggedInText')
-        text.innerText = `logged in as: ${CURRENT_USER.username}`
-        container.appendChild(text)
+        const text = document.createElement('p');
+        text.classList.add('loggedInText');
+        text.innerText = `logged in as: ${CURRENT_USER.username}`;
+        container.appendChild(text);
+
+        if(CURRENT_USER.isAdmin){
+        const isAdminText = document.createElement('p');
+        isAdminText.classList.add('isAdminText');
+        isAdminText.innerText = `isAdmin = true`;
+        container.appendChild(isAdminText);
+        }
     }
 }
 
 async function handleLoginClick(username, password){
     try{
         const res = await fetchLogin(username, password);
-        console.log('Login successful:', res);
-        CURRENT_USER = res;
-        reRenderFullPage()
+        CURRENT_USER = res.user;
+        console.log('Login successful:', CURRENT_USER);
+        reRenderFullPage();
     }catch(err){
         alert('Login failed: ' + err.message);
     }
 }
 
 function handleLogout(){
+    //TODO fetch logout
     CURRENT_USER = null;
-    reRenderFullPage()
+    reRenderFullPage();
 }
 
