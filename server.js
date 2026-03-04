@@ -40,6 +40,10 @@ app.post('/api/venues/new', express.json(), async (req,res) => {
         if (token && sessions[token] && sessions[token].isAdmin) {
 
             const {name, url, district} = req.body;
+
+            //check if name is not null
+            if (!name) return res.status(400).json({message: 'Name is required'})
+
             const results = await venueModel.createVenue(name, url, district)
             res.status(200).json({message: 'succesfully posted', results})
 
@@ -58,9 +62,18 @@ app.put('/api/venues/:id', express.json(), async (req, res) => {
         if (token && sessions[token] && sessions[token].isAdmin) {
 
             const venueId = req.params.id;
-            const { name, url, district} = req.body;
+            const {name, url, district} = req.body;
+
+            //check if name is not null
+            if (!name) return res.status(400).json({message: 'Name is required'})
+
+            //check if venueId is not null
+            if (!venueId) return res.status(400).json({message: 'Venue ID is required'})
+
             const results = await venueModel.updateVenue(venueId, name, url, district)
+
             res.status(200).json({message: 'succesfully updated', results})
+
         } else{
             res.status(401).json({message: 'Unauthorized'})
         }
@@ -75,6 +88,10 @@ app.delete('/api/venues/:id', express.json(), async (req,res) => {
         const token = req.signedCookies.authToken;
         if (token && sessions[token] && sessions[token].isAdmin) {
             const venueId = req.params.id;
+
+            //check if venueId is not null
+            if (!venueId) return res.status(400).json({message: 'Venue ID is required'})
+
             const result = await venueModel.deleteVenue(venueId)
             res.status(200).json({message: 'succesfully deleted', result})
         } else{
@@ -87,7 +104,7 @@ app.delete('/api/venues/:id', express.json(), async (req,res) => {
     }
 })
 
-app.get('api/users', async (req,res) => {
+app.get('/api/users', async (req,res) => {
     try{
         const users = await usersModel.getAllUsers();
         res.status(200).json(users)
@@ -95,7 +112,7 @@ app.get('api/users', async (req,res) => {
         res.status(500).json({message: 'Could not get users', error: err})
     }
 })
-app.get('api/user/:name', express.json(), async (req,res) => {
+app.get('/api/user/:name', express.json(), async (req,res) => {
     try{
         const name = req.params.name
         const user = await usersModel.getUser(name)
@@ -105,7 +122,7 @@ app.get('api/user/:name', express.json(), async (req,res) => {
     }
 })
 
-app.post('api/login', express.json(), async(req,res) =>{
+app.post('/api/login', express.json(), async(req,res) =>{
     try{
         const { username, password } = req.body;
 
@@ -124,7 +141,7 @@ app.post('api/login', express.json(), async(req,res) =>{
         res.status(500).json({message: 'Could not log in', error: err})
     }
 })
-app.get('api/logout', (req, res) => {
+app.get('/api/logout', (req, res) => {
     try{
         const token = req.signedCookies.authToken;
 
