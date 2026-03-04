@@ -124,7 +124,7 @@ app.post('api/login', express.json(), async(req,res) =>{
         res.status(500).json({message: 'Could not log in', error: err})
     }
 })
-app.get('/logout', (req, res) => {
+app.get('api/logout', (req, res) => {
     try{
         const token = req.signedCookies.authToken;
 
@@ -135,7 +135,7 @@ app.get('/logout', (req, res) => {
         res.clearCookie('authToken');
         res.status(200).json({message: 'Logged out successfully'})
         res.redirect('/');
-        
+
     } catch(err) {
         res.status(500).json({message: 'Could not log out', error: err})
     }
