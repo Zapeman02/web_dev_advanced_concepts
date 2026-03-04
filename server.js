@@ -125,12 +125,20 @@ app.post('api/login', express.json(), async(req,res) =>{
     }
 })
 app.get('/logout', (req, res) => {
-    const token = req.signedCookies.authToken;
-    if (token) {
-        delete sessions[token];
+    try{
+        const token = req.signedCookies.authToken;
+
+        if (token) {
+            delete sessions[token];
+        }
+
+        res.clearCookie('authToken');
+        res.status(200).json({message: 'Logged out successfully'})
+        res.redirect('/');
+        
+    } catch(err) {
+        res.status(500).json({message: 'Could not log out', error: err})
     }
-    res.clearCookie('authToken');
-    res.redirect('/');
 });
 
 
