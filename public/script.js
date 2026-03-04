@@ -98,28 +98,22 @@ async function fetchAllVenues(){
     return res.json();
 }
 
-function fetchLogin(username, password){
+async function fetchLogin(username, password){
     //TODO login user and return user object and authToken
-    /* example
-    fetch('/api/login', {
+
+    const res = await fetch('/api/login', {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${token}`  // server verifies THIS
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({username,password}),
         credentials: 'include'
-    })
-        if(!res.ok) throw new Error('Invalid username or password')
-        return res.json()
-    */
-        
-    //temp test user REMOVE
-    /*return {user:{
-        username:username,
-        password:password,
-        isAdmin:true
-    }};*/
-    
+    });
+    if(!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.message || 'Invalid username or password');
+    }
+    return res.json();
 }
 
 function fetchCreateVenue(name, url, district){
@@ -128,9 +122,6 @@ function fetchCreateVenue(name, url, district){
     /* example
     fetch('/api/venues/new', {
         method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${token}`  // server verifies THIS
-        },
         body: JSON.stringify({name, url, district}),
         credentials: 'include'
     })
