@@ -1,10 +1,14 @@
-
+// =========== GLOBAL STATES =================
 const pages = {
     HOME: 'home',
     LOGIN: 'login'
 }
 let CURRENT_PAGE = pages.HOME
 let CURRENT_USER = null
+let CURRENT_FILTERS = {
+    search:'',
+    sort: 'nameAsc'
+}
 
 // ================== MAIN ENTRY POINT ===================  
 async function createHtmlDom(){
@@ -73,7 +77,8 @@ function clearBody(){
 async function loadHome() {
     createFilterBar();
     const venues = await fetchAllVenues();
-    createAllVenueItems(venues);
+    const filteredVenues = applyFilters(venues);
+    createAllVenueItems(filteredVenues);
 }
 
 function loadLogin(){
@@ -85,9 +90,45 @@ function reRenderFullPage(){
     createHtmlDom();
 }
 
+async function reloadVenues(){
+    const main = document.getElementById('main');
+
+    const oldContainer = main.querySelector('.venueItemContainer');
+    if(oldContainer){
+        console.log('removin old venuItems')
+        oldContainer.innerHTML = '';
+        oldContainer.remove();
+    }
+
+    const venues = await fetchAllVenues();
+    const filteredVenues = applyFilters(venues);
+    createAllVenueItems(filteredVenues);
+}
+
+function applyFilters(venues){
+    let result = venues;
+    const filters = CURRENT_FILTERS
+
+    if(filters.search){
+        result = result.filter(v =>
+            v.name.toLowerCase().includes(filters.search.toLowerCase())
+        )
+    }
+
+    switch(filters.sort){
+        case 'nameAsc':
+            result.sort((a,b) => a.name.localeCompare(b.name))
+            break;
+        case 'nameDesc':
+            result.sort((a,b) => b.name.localeCompare(a.name))
+            break;
+    }
+
+    return result;
+}
+
 
 //================== FETCH FUNCTIONS ======================
-//fetch från våra egna apier, och html uppbyggnad
 // funktionerna ska dubbelchecka input innan request
 // throw new Error('beskriva vad som hänt') om fel
 // Returnera jsonobject
@@ -114,6 +155,9 @@ async function fetchLogin(username, password){
         throw new Error(errorData.message || 'Invalid username or password');
     }
     return res.json();
+}
+async function fetchLogout(){
+    //TODO logout user make sure authtoken is removed
 }
 
 function fetchCreateVenue(name, url, district){
@@ -156,7 +200,79 @@ function fetchUser(name){
 //Kasper HTML moduler med js
 
 function createFilterBar(){
- //TODO
+ // TODO
+    const main = document.getElementById('main');
+
+    const container = document.createElement('div');
+    container.classList.add('filterBarContainer');
+
+    main.appendChild(container);
+
+    const searchInput = document.createElement('input');
+    searchInput.classList.add('searchInput')
+    searchInput.setAttribute('type', 'search');
+    searchInput.setAttribute('placeHolder', 'Search for venue');
+
+    const dropdownContainer = document.createElement('div');
+    dropdownContainer.classList.add('dropdownContainer');
+
+    const dropdownLabel = document.createElement('label');
+    dropdownLabel.classList.add('dropdownLabel');
+    dropdownLabel.setAttribute('for', 'filters');
+    dropdownContainer.innerText = 'Sort By:';
+
+    const filterSelect = document.createElement('select');
+    filterSelect.classList.add('filterSelect');
+    filterSelect.setAttribute('name', 'filters');
+    filterSelect.setAttribute('id', 'filters');
+
+    const filterOptionNameAsc = document.createElement('option');
+    filterOptionNameAsc.setAttribute('value', 'nameAsc');
+    filterOptionNameAsc.innerText = 'Name Asc';
+
+    const filterOptionNameDesc = document.createElement('option');
+    filterOptionNameDesc.setAttribute('value', 'nameDesc');
+    filterOptionNameDesc.innerText = 'Name Desc';
+
+    filterSelect.appendChild(filterOptionNameAsc);
+    filterSelect.appendChild(filterOptionNameDesc);
+    
+    dropdownContainer.appendChild(filterSelect);
+    dropdownContainer.appendChild(dropdownLabel);
+
+    const button = document.createElement('button');
+    button.classList.add('clearSearchButton');
+    button.setAttribute('type', 'button');
+    button.innerText = "Clear"
+
+    container.appendChild(button);
+    container.appendChild(searchInput);
+    container.appendChild(dropdownContainer);
+
+    button.addEventListener('click', () => { handleClearClick() })
+    searchInput.addEventListener('change', (e) => {handleSearchInput(e.currentTarget)})
+    filterSelect.addEventListener('change', (e) => {handleFilterSelect(e.currentTarget)})
+
+}
+
+function handleSearchInput(target){
+    CURRENT_FILTERS.search = target.value;
+    reloadVenues();
+}
+
+function handleFilterSelect(target){
+    CURRENT_FILTERS.sort = target.value;
+    reloadVenues();
+}
+
+function handleClearClick(){
+    CURRENT_FILTERS.search = '';
+    CURRENT_FILTERS.sort = 'nameAsc';
+    navigateTo(pages.HOME)
+}
+
+function createAdminCrudPanel(){
+// TODO
 }
 
 function createAllVenueItems(venue){
@@ -306,9 +422,14 @@ async function handleLoginClick(username, password){
     }
 }
 
-function handleLogout(){
+async function handleLogout(){
     //TODO fetch logout
-    CURRENT_USER = null;
-    reRenderFullPage();
+    try{
+        const res = await fetchLogout();
+        CURRENT_USER = null;
+        reRenderFullPage();
+    }catch(err){
+        alert('error when logging out:', err.message)
+    }
 }
 
