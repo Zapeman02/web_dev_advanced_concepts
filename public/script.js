@@ -19,12 +19,7 @@ async function createHtmlDom(){
         createHeader();
         renderMain();
 
-        // menu bar jkpgcity, login
-        // search / filter options
-        // venueitems based on search
-        // footer
-        // if logged button is pressed show login screen
-        // default show home with venues
+        //TODO if auth token exist make sure to be logged in
 
     }catch(err){
         console.log('Error building DOM:', err);
@@ -76,6 +71,7 @@ function clearBody(){
 
 async function loadHome() {
     createFilterBar();
+    createAdminCrudPanel();
     const venues = await fetchAllVenues();
     const filteredVenues = applyFilters(venues);
     createAllVenueItems(filteredVenues);
@@ -140,8 +136,6 @@ async function fetchAllVenues(){
 }
 
 async function fetchLogin(username, password){
-    //TODO login user and return user object and authToken
-
     const res = await fetch('/api/login', {
         method: 'POST',
         headers: {
@@ -157,11 +151,20 @@ async function fetchLogin(username, password){
     return res.json();
 }
 async function fetchLogout(){
-    //TODO logout user make sure authtoken is removed
+    const res = await fetch('/api/logout', {
+        method: 'GET',
+        credentials: 'include'
+    });
+    if(!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.message || 'Could not log out');
+    }
 }
 
 function fetchCreateVenue(name, url, district){
-    // fetch create venue route from server and send token with it
+    // fetch create venue route from server and send token with it by passing "credentials: 'include'"
+
+    //return jsonObject
 
     /* example
     fetch('/api/venues/new', {
@@ -173,10 +176,11 @@ function fetchCreateVenue(name, url, district){
         return res.json()
     */
 }
-function fetchUpdateVenue(){
+function fetchUpdateVenue(id, name, url, district){
     // fetch update venue route from server and send token with it
+    //  return jsonObject
 }
-function fetchDeleteVenue(){
+function fetchDeleteVenue(venueId){
     // fetch delete venue route from server and send token with it
 }
 
@@ -272,7 +276,66 @@ function handleClearClick(){
 }
 
 function createAdminCrudPanel(){
-// TODO
+    if(CURRENT_USER && CURRENT_USER.isAdmin){
+        const container = document.createElement('div');
+        container.classList.add('adminCrudPanelContainer');
+
+        const title = document.createElement('h2');
+        title.classList.add('crudPanelTitle');
+        title.innerText="CRUD Panel";
+
+        container.appendChild(title);
+
+        const crudInputContainer = document.createElement('div');
+        crudInputContainer.classList.add('crudInputContainer');
+        container.appendChild(crudInputContainer);
+
+        const idInput = createInput(crudInputContainer, "idInput", "Venue ID", "number");
+        const nameInput = createInput(crudInputContainer, "nameInput", "Venue Name", "text");
+        const urlInput = createInput(crudInputContainer, "urlInput", "Venue URL", "text");
+        const districtInput = createInput(crudInputContainer, "districtInput", "Venue District", "text");
+
+        const crudButtonContainer = document.createElement('div');
+        crudButtonContainer.classList.add('crudButtonContainer');
+        container.appendChild(crudButtonContainer);
+
+        createButton(crudButtonContainer, "addVenueButton", "Add", () => {addVenueButtonClickHandler(nameInput.value, urlInput.value, districtInput.value)});
+        createButton(crudButtonContainer, "updateVenueButton", "Update", () => {updateVenueButtonClickHandler(idInput.value, nameInput.value, urlInput.value, districtInput.value)});
+        createButton(crudButtonContainer, "deleteVenueButton", "Delete", () => {deleteVenueButtonClickHandler(idInput.value)});
+
+
+        const main = document.getElementById('main');
+        main.appendChild(container);
+    }
+
+}
+
+async function deleteVenueButtonClickHandler(id){
+    try{
+        const res = await fetchDeleteVenue(id);
+        alert(`Deleted venue with id:${id} \nRows affected: ${res.rowsAffected}`)
+        reloadVenues()
+    }catch(err){
+        alert('Error deleteing venue:', err.message)
+    }
+}
+async function addVenueButtonClickHandler(name, url, district){
+    try{
+        const res = await fetchCreateVenue(name,url,district);
+        alert(`Added venue: id:${res.id}, name:${res.name}`)
+        reloadVenues()
+    }catch(err){
+        alert('Error adding venue:', err.message)
+    }
+}
+async function updateVenueButtonClickHandler(id, name, url, district){
+    try{
+        const res = await fetchUpdateVenue(id,name,url, district);
+        alert(`Uppdated venue: id:${res.id}, name:${res.name}`)
+        reloadVenues()
+    }catch(err){
+        alert('Error uppdating venue:', err.message)
+    }
 }
 
 function createAllVenueItems(venue){
@@ -409,6 +472,28 @@ function createLoggedInText(container){
         container.appendChild(isAdminText);
         }
     }
+}
+
+function createButton(container, name, text, eventHandler = null){
+    const button = document.createElement('button');
+    button.classList.add(name);
+    button.setAttribute('type', 'button');
+    button.innerText = text;
+    if(eventHandler){
+        button.addEventListener('click', eventHandler);
+    }
+    container.appendChild(button);
+    return button;
+}
+
+function createInput(container, name, placeholder, type){
+    const input = document.createElement('input');
+    input.classList.add(name);
+    input.setAttribute('placeholder', placeholder);
+    input.setAttribute('type', type);
+    container.appendChild(input);
+
+    return input;
 }
 
 async function handleLoginClick(username, password){

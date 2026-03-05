@@ -78,6 +78,37 @@ header{
     cursor: pointer;
 }
 
+/*Admin CRUD panel*/
+.adminCrudPanelContainer{
+    max-width: 750px;
+    padding: 1rem;
+    border-radius: 16px;
+    margin: auto;
+    align-items: center;
+    text-align: center;
+    background-color: wheat;
+}
+
+@media (max-width: 750px) {
+    .adminCrudPanelContainer{
+        max-width: 50%;
+    }
+    .crudInputContainer{
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        margin: auto;
+    }
+}
+
+.idInput, .nameInput, .urlInput, .districtInput{
+    margin: 0.5rem;
+}
+
+.deleteVenueButton, .addVenueButton, .updateVenueButton{
+    margin: 0.5rem;
+}
+
 /*venuecontainers*/
 .venueItemContainer{
     display: grid;
