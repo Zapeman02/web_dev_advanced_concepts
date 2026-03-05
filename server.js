@@ -44,8 +44,8 @@ app.post('/api/venues/new', express.json(), async (req,res) => {
             //check if name is not null
             if (!name) return res.status(400).json({message: 'Name is required'})
 
-            const results = await venueModel.createVenue(name, url, district)
-            res.status(200).json({message: 'succesfully posted', results})
+            const result = await venueModel.createVenue(name, url, district)
+            res.status(200).json({message: 'succesfully posted', result})
 
         } else {
             res.status(401).json({message: 'Unauthorized'})
@@ -70,9 +70,8 @@ app.put('/api/venues/:id', express.json(), async (req, res) => {
             //check if venueId is not null
             if (!venueId) return res.status(400).json({message: 'Venue ID is required'})
 
-            const results = await venueModel.updateVenue(venueId, name, url, district)
-
-            res.status(200).json({message: 'succesfully updated', results})
+            const result = await venueModel.updateVenue(venueId, name, url, district)
+            res.status(200).json({message: 'succesfully updated', result})
 
         } else{
             res.status(401).json({message: 'Unauthorized'})
@@ -93,7 +92,7 @@ app.delete('/api/venues/:id', express.json(), async (req,res) => {
             if (!venueId) return res.status(400).json({message: 'Venue ID is required'})
 
             const result = await venueModel.deleteVenue(venueId)
-            res.status(200).json({message: 'succesfully deleted', result})
+            res.status(200).json({message: 'succesfully deleted', rowsAffected:result})
         } else{
             res.status(401).json({message: 'Unauthorized'})
         }
