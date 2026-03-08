@@ -364,10 +364,37 @@ async function addVenueButtonClickHandler(name, url, district,opening_hours){
 }
 async function updateVenueButtonClickHandler(id, name, url, district,opening_hours){
     try{
-        const res = await fetchUpdateVenue(id, name, url, district, opening_hours);
-        alert(`Added venue: ${res.result.name} med ID: ${res.result.id}`);
-
+        if (!id) {
+            alert('Please enter a Venue ID');
+            return;
+        }
+        
+        // Hämta alla venues och hitta den med rätt ID
+        const venues = await fetchAllVenues();
+        const currentVenue = venues.find(v => v.id == id);
+        
+        if (!currentVenue) {
+            alert('Venue not found');
+            return;
+        }
+        
+        // Använd befintliga värden om fälten är tomma
+        const updatedName = name || currentVenue.name;
+        const updatedUrl = url || currentVenue.url;
+        const updatedDistrict = district || currentVenue.district;
+        const updatedOpeningHours = opening_hours || currentVenue.opening_hours;
+        
+        const res = await fetchUpdateVenue(
+            id, 
+            updatedName, 
+            updatedUrl, 
+            updatedDistrict, 
+            updatedOpeningHours
+        );
+        
+        alert(`Updated venue: ${res.result.name}`);
         await reloadVenues();
+       
        
     }catch(err){
         alert('Error uppdating venue:', err.message)
