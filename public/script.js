@@ -406,7 +406,6 @@ function createVenueItem(container, venue){
     districtP.innerText = venue.district;
 
     const openingHoursP = document.createElement("p")
-    console.log(`Venue ${venue.name}:`, venue.opening_hours);
 
     openingHoursP.innerText = venue.opening_hours
 
