@@ -3,6 +3,7 @@ const app = express();
 const {connectDB} = require('./db/db');
 const venueModel = require('./db/venueModel');
 const usersModel = require('./db/usersModel')
+const setupDB = require('./db/db-setup');
 
 //cookies
 const cookieParser = require('cookie-parser');
@@ -166,6 +167,7 @@ app.get('/api/logout', (req, res) => {
 
 const startServer = async () => {
     await connectDB()
+    await setupDB()
     app.listen(PORT, () => {
         console.log(`Server is running on http://127.0.0.1:${PORT}...`)
     })
