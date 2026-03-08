@@ -39,12 +39,12 @@ app.post('/api/venues/new', express.json(), async (req,res) => {
         //if token and session is admin
         if (token && sessions[token] && sessions[token].isAdmin) {
 
-            const {name, url, district} = req.body;
+            const {name, url, district, opening_hours} = req.body;
 
             //check if name is not null
             if (!name) return res.status(400).json({message: 'Name is required'})
 
-            const result = await venueModel.createVenue(name, url, district)
+            const result = await venueModel.createVenue(name, url, district,opening_hours)
             res.status(200).json({message: 'succesfully posted', result})
 
         } else {
@@ -62,7 +62,7 @@ app.put('/api/venues/:id', express.json(), async (req, res) => {
         if (token && sessions[token] && sessions[token].isAdmin) {
 
             const venueId = req.params.id;
-            const {name, url, district} = req.body;
+            const {name, url, district,opening_hours} = req.body;
 
             //check if name is not null
             if (!name) return res.status(400).json({message: 'Name is required'})
@@ -70,7 +70,7 @@ app.put('/api/venues/:id', express.json(), async (req, res) => {
             //check if venueId is not null
             if (!venueId) return res.status(400).json({message: 'Venue ID is required'})
 
-            const result = await venueModel.updateVenue(venueId, name, url, district)
+            const result = await venueModel.updateVenue(venueId, name, url, district,opening_hours)
             res.status(200).json({message: 'succesfully updated', result})
 
         } else{

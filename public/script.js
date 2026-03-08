@@ -161,27 +161,59 @@ async function fetchLogout(){
     }
 }
 
-function fetchCreateVenue(name, url, district){
-    // fetch create venue route from server and send token with it by passing "credentials: 'include'"
-
-    //return jsonObject
-
-    /* example
-    fetch('/api/venues/new', {
-        method: 'PUT',
-        body: JSON.stringify({name, url, district}),
-        credentials: 'include'
+function fetchCreateVenue(name, url, district,opening_hours){
+    return fetch('api/venues/new', {
+        method : 'POST',
+        headers:{
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify({name,url,district,opening_hours}),
+        credentials : 'include'
     })
-        if(!res.ok) throw new Error('Invalid Venue Values')
+    .then(res => {
+        if(!res.ok){
+            return res.json().then(errorData =>{
+                throw new Error(errorData.message || 'Failed to create venue')
+            })
+        }
         return res.json()
-    */
+    })   
 }
-function fetchUpdateVenue(id, name, url, district){
-    // fetch update venue route from server and send token with it
-    //  return jsonObject
+function fetchUpdateVenue(id, name, url, district, opening_hours){
+    return fetch(`api/venues/${id}`, {
+        method : 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name,url,district,opening_hours}),
+        credentials : 'include'
+    })
+      .then(res => {
+        if(!res.ok){
+            return res.json().then(errorData =>{
+                throw new Error(errorData.message || 'Failed to update venue')
+            })
+        }
+        return res.json()
+    })  
 }
 function fetchDeleteVenue(venueId){
     // fetch delete venue route from server and send token with it
+
+    return fetch(`/api/venues/${venueId}`, {
+        method : 'DELETE',
+        credentials : 'include'
+    })
+    .then(res=>{
+
+    if(!res.ok){
+        return res.json().then(errorData =>{
+            throw new Error(errorData.message || 'Failed to delete venue')
+        })
+    }
+    return res.json()
+    })  
+    
 }
 
 
@@ -365,9 +397,11 @@ function createVenueItem(container, venue){
     const districtP = document.createElement("p");
     districtP.innerText = venue.district;
 
+    const openingHoursP = document.createElement("p")
+    openingHoursP.innerText = venue.opening_hours
     venueItem.appendChild(nameP);
     venueItem.appendChild(districtP);
-
+    venueItem.appendChild(openingHoursP)
     container.appendChild(venueItem);
 
 }

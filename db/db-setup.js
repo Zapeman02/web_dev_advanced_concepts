@@ -32,6 +32,7 @@ async function createVenueTable() {
     name VARCHAR(100),
     url VARCHAR(255),
     district VARCHAR(100)
+    opening_hours TEXT DEFAULT 'More info on website'
     );`;
 
     await client.query(createTableQuery);
@@ -44,11 +45,11 @@ async function fillTableVenues() {
     const data = JSON.parse(await fs.readFile(path.join(__dirname, 'stores.json'), 'utf-8'));
 
     const insertQuery = `
-    INSERT INTO venues (name, url, district)
-    VALUES ($1, $2, $3)
+    INSERT INTO venues (name, url, district, opening_hours)
+    VALUES ($1, $2, $3,$4)
     ;`;
     for (const venue of data){
-        const params = [venue.name, venue.url, venue.district];
+        const params = [venue.name, venue.url, venue.district,venue.opening_hours];
         try{
             await client.query(insertQuery, params);
         } catch(err){
