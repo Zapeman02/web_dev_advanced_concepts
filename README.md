@@ -4,6 +4,15 @@
 
 - Docker running
 
+## Migrating from the old setup guide
+
+If you've followed the old setup guide, remove the old containers and image first:
+
+```bash
+docker rm -f project-postgres-container
+docker image rm project-postgres-image
+```
+
 ## Run with Docker
 
 **1. Create a network**
@@ -31,18 +40,23 @@ docker run -d -p 8080:8080 --name project-node-container --network project-netwo
 > If you've run this before, just do `docker start project-node-container`
 
 **4. Verify start of server went well**
+
 ```bash
 docker logs project-node-container
-``` 
-Output should be:   
-Connected to DB 
-setting up DB   
-Venues table created with opening_hours column  
-Users created!  
-testuser created    
-DB is setup 
-Server is running on http://127.0.0.1:8080...   
+```
 
-The server will automatically set up the database and start.    
+Output should be:
+
+```
+Connected to DB
+setting up DB
+Venues table created with opening_hours column
+Users created!
+testuser created
+DB is setup
+Server is running on http://127.0.0.1:8080...
+```
+
+The server will automatically set up the database and start.
 
 Server runs on http://127.0.0.1:8080
