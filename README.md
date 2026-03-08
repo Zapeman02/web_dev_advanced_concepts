@@ -60,3 +60,13 @@ Server is running on http://127.0.0.1:8080...
 The server will automatically set up the database and start.
 
 Server runs on http://127.0.0.1:8080
+
+## Updating the server after code changes
+
+Rebuild the Node image and restart the container:
+
+```bash
+docker build -f Dockerfile.node -t project-node-image .
+docker rm -f project-node-container
+docker run -d -p 8080:8080 --name project-node-container --network project-network project-node-image
+```
