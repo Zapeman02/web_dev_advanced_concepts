@@ -104,7 +104,7 @@ async function reloadVenues(){
 
 function applyFilters(venues){
     let result = venues;
-    const filters = CURRENT_FILTERS
+    const filters = CURRENT_FILTERS;
 
     if(filters.search){
         result = result.filter(v =>
@@ -114,10 +114,17 @@ function applyFilters(venues){
 
     switch(filters.sort){
         case 'nameAsc':
-            result.sort((a,b) => a.name.localeCompare(b.name))
+            result.sort((a,b) => a.name.localeCompare(b.name));
             break;
         case 'nameDesc':
-            result.sort((a,b) => b.name.localeCompare(a.name))
+            result.sort((a,b) => b.name.localeCompare(a.name));
+            break;
+        case 'districtAsc':
+            result.sort((a,b) => {
+                distA = a.district || '';
+                distB = b.district || '';
+                return distA.localeCompare(distB);
+            });
             break;
     }
 
@@ -271,8 +278,13 @@ function createFilterBar(){
     filterOptionNameDesc.setAttribute('value', 'nameDesc');
     filterOptionNameDesc.innerText = 'Name Desc';
 
+    const filterOptionDistrictAsc = document.createElement('option');
+    filterOptionDistrictAsc.setAttribute('value', 'districtAsc');
+    filterOptionDistrictAsc.innerText = 'District Asc';
+
     filterSelect.appendChild(filterOptionNameAsc);
     filterSelect.appendChild(filterOptionNameDesc);
+    filterSelect.appendChild(filterOptionDistrictAsc);
     
     dropdownContainer.appendChild(filterSelect);
     dropdownContainer.appendChild(dropdownLabel);
