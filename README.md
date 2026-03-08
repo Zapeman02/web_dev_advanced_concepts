@@ -1,31 +1,35 @@
 # Setup Guide
 
 ## Prerequisites
+
 - Docker running
-- Node.js installed
 
-## Steps
+## Run with Docker
 
-**1. Install dependencies**
+**1. Create a network**
+
 ```bash
-npm install
+docker network create project-network
 ```
 
-**2. Start the Postgres container**
+**2. Build and start the Postgres container**
+
 ```bash
 docker build -f Dockerfile.postgres -t project-postgres-image .
-docker run -d -p 5432:5432 --name project-postgres-container project-postgres-image
+docker run -d --name project-postgres-container --network project-network project-postgres-image
 ```
+
 > If you've run this before, just do `docker start project-postgres-container`
 
-**3. Set up the database**
+**3. Build and start the Node container**
+
 ```bash
-node db/db-setup.js
+docker build -f Dockerfile.node -t project-node-image .
+docker run -d -p 8080:8080 --name project-node-container --network project-network project-node-image
 ```
 
-**4. Start the server**
-```bash
-node server.js
-```
+> If you've run this before, just do `docker start project-node-container`
+
+The server will automatically set up the database and start.
 
 Server runs on http://127.0.0.1:8080
