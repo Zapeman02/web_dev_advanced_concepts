@@ -369,8 +369,9 @@ async function updateVenueButtonClickHandler(id, name, url, district,opening_hou
             return;
         }
         
-        // Hämta alla venues och hitta den med rätt ID
+      
         const venues = await fetchAllVenues();
+        //get all venues and match the correct id
         const currentVenue = venues.find(v => v.id == id);
         
         if (!currentVenue) {
@@ -378,12 +379,13 @@ async function updateVenueButtonClickHandler(id, name, url, district,opening_hou
             return;
         }
         
-        // Använd befintliga värden om fälten är tomma
+        // create new updated variables and if you dont enter value, keep the old one.
         const updatedName = name || currentVenue.name;
         const updatedUrl = url || currentVenue.url;
         const updatedDistrict = district || currentVenue.district;
         const updatedOpeningHours = opening_hours || currentVenue.opening_hours;
         
+        //update the response with updated values
         const res = await fetchUpdateVenue(
             id, 
             updatedName, 
