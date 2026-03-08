@@ -65,12 +65,21 @@ app.put('/api/venues/:id', express.json(), async (req, res) => {
             const {name, url, district,opening_hours} = req.body;
 
             //check if name is not null
-            if (!name) return res.status(400).json({message: 'Name is required'})
+            //if (!name) return res.status(400).json({message: 'Name is required'})
 
             //check if venueId is not null
             if (!venueId) return res.status(400).json({message: 'Venue ID is required'})
 
-            const result = await venueModel.updateVenue(venueId, name, url, district,opening_hours)
+          
+            const result = await venueModel.updateVenue(
+                venueId, 
+                name,       
+                url,         
+                district,    
+                opening_hours 
+        );
+            
+
             res.status(200).json({message: 'succesfully updated', result})
 
         } else{

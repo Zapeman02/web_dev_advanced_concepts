@@ -73,6 +73,7 @@ async function loadHome() {
     createFilterBar();
     createAdminCrudPanel();
     const venues = await fetchAllVenues();
+    console.log('Venues data:', venues)
     const filteredVenues = applyFilters(venues);
     createAllVenueItems(filteredVenues);
 }
@@ -326,13 +327,14 @@ function createAdminCrudPanel(){
         const nameInput = createInput(crudInputContainer, "nameInput", "Venue Name", "text");
         const urlInput = createInput(crudInputContainer, "urlInput", "Venue URL", "text");
         const districtInput = createInput(crudInputContainer, "districtInput", "Venue District", "text");
-
+        const openingHoursInput = createInput(crudInputContainer, "openingHoursInput", "Opening Hours (Mon-Fri 10-18)", "text");
+        
         const crudButtonContainer = document.createElement('div');
         crudButtonContainer.classList.add('crudButtonContainer');
         container.appendChild(crudButtonContainer);
 
-        createButton(crudButtonContainer, "addVenueButton", "Add", () => {addVenueButtonClickHandler(nameInput.value, urlInput.value, districtInput.value)});
-        createButton(crudButtonContainer, "updateVenueButton", "Update", () => {updateVenueButtonClickHandler(idInput.value, nameInput.value, urlInput.value, districtInput.value)});
+        createButton(crudButtonContainer, "addVenueButton", "Add", () => {addVenueButtonClickHandler(nameInput.value, urlInput.value, districtInput.value,openingHoursInput.value)});
+        createButton(crudButtonContainer, "updateVenueButton", "Update", () => {updateVenueButtonClickHandler(idInput.value, nameInput.value, urlInput.value, districtInput.value,openingHoursInput.value)});
         createButton(crudButtonContainer, "deleteVenueButton", "Delete", () => {deleteVenueButtonClickHandler(idInput.value)});
 
 
@@ -351,20 +353,22 @@ async function deleteVenueButtonClickHandler(id){
         alert('Error deleteing venue:', err.message)
     }
 }
-async function addVenueButtonClickHandler(name, url, district){
+async function addVenueButtonClickHandler(name, url, district,opening_hours){
     try{
-        const res = await fetchCreateVenue(name,url,district);
-        alert(`Added venue: id:${res.id}, name:${res.name}`)
+        const res = await fetchCreateVenue(name,url,district,opening_hours);
+        alert(`Added venue: id:${res.result.id}, name:${res.result.name}`)
         reloadVenues()
     }catch(err){
         alert('Error adding venue:', err.message)
     }
 }
-async function updateVenueButtonClickHandler(id, name, url, district){
+async function updateVenueButtonClickHandler(id, name, url, district,opening_hours){
     try{
-        const res = await fetchUpdateVenue(id,name,url, district);
-        alert(`Uppdated venue: id:${res.id}, name:${res.name}`)
-        reloadVenues()
+        const res = await fetchUpdateVenue(id, name, url, district, opening_hours);
+        alert(`Added venue: ${res.result.name} med ID: ${res.result.id}`);
+
+        await reloadVenues();
+       
     }catch(err){
         alert('Error uppdating venue:', err.message)
     }
@@ -390,7 +394,11 @@ function createVenueItem(container, venue){
         venueItem.addEventListener('click', () => handleVenueClick(venue.url));
         venueItem.setAttribute('style', 'cursor: pointer;');
     }
-
+    if (CURRENT_USER && CURRENT_USER.isAdmin) {
+        const id = document.createElement("p");
+        id.innerText = `ID: ${venue.id}`;
+        venueItem.appendChild(id);
+    }
     const nameP = document.createElement("p");
     nameP.innerText = venue.name;
 
@@ -398,7 +406,15 @@ function createVenueItem(container, venue){
     districtP.innerText = venue.district;
 
     const openingHoursP = document.createElement("p")
+    console.log(`Venue ${venue.name}:`, venue.opening_hours);
+
     openingHoursP.innerText = venue.opening_hours
+
+    if (venue.opening_hours && venue.opening_hours !== 'More info on website') {
+        openingHoursP.innerText = `${venue.opening_hours}`;
+    } else {
+        openingHoursP.innerText = 'More info on website';
+    }
     venueItem.appendChild(nameP);
     venueItem.appendChild(districtP);
     venueItem.appendChild(openingHoursP)

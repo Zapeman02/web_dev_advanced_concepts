@@ -31,12 +31,13 @@ async function createVenueTable() {
     id SERIAL PRIMARY KEY,
     name VARCHAR(100),
     url VARCHAR(255),
-    district VARCHAR(100)
+    district VARCHAR(100),
     opening_hours TEXT DEFAULT 'More info on website'
     );`;
 
     await client.query(createTableQuery);
-    
+    console.log('Venues table created with opening_hours column');
+
 }
 
 async function fillTableVenues() {

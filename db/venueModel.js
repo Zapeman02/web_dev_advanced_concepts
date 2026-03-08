@@ -34,9 +34,10 @@ const venueModel = {
     },
     createVenue : async function(name,url,district,opening_hours){
         try{
-            const query = 'INSERT INTO venues (name,url,district) VALUES($1,$2,$3,$4) RETURNING*'
+            const query = 'INSERT INTO venues (name,url,district,opening_hours) VALUES($1,$2,$3,$4) RETURNING*'
             const res = await client.query(query,[name,url,district,opening_hours])
             //only return the added data
+            console.log("Updated result", res.rows[0])
             return res.rows[0]
         }catch(err){
             console.error("error in createvenue", err.stack)
@@ -45,7 +46,7 @@ const venueModel = {
     },
     updateVenue : async function(id,name,url,district,opening_hours){
         try{
-            const query = 'UPDATE venues SET NAME = $1, url = $2, district=$3 , opening_hours = $4 WHERE id = $5 RETURNING*'
+            const query = 'UPDATE venues SET name = $1, url = $2, district=$3 , opening_hours = $4 WHERE id = $5 RETURNING *'
             const res = await client.query(query,[name,url,district,opening_hours,id])
             //only return the eccential data, not all. This case the updated one
             return res.rows[0]
