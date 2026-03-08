@@ -2,10 +2,11 @@ const path = require('path')
 const {client, connectDB, disconnectDB} = require(path.join(__dirname, 'db.js'))
 const fs = require('fs').promises
 
-async function setupDb(){
+async function setupDB(){
 
     try {
-        await connectDB()
+        //await connectDB()
+        console.log('setting up DB');
         await createVenueTable()
         await fillTableVenues()
 
@@ -13,12 +14,12 @@ async function setupDb(){
         await fillUsersTable()
         
         console.log('DB is setup')
-        await disconnectDB()
+        //await disconnectDB()
     } catch (err){
         console.log('error when setting up db', err.stack)
     }
 }
-setupDb();
+//setupDb();
 
 async function createVenueTable() {
     
@@ -101,3 +102,5 @@ async function fillUsersTable(){
         console.log(err)
     }
 }
+
+module.exports = setupDB;

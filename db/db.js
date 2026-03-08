@@ -2,7 +2,8 @@ const { Client } = require('pg');
 
 //change host to project-postgres-container when running node container
 const client = new Client({
-    host:'127.0.0.1',
+    //host:'127.0.0.1',
+    host:'project-postgres-container',
     port: 5432,
     user: 'postgres',
     password: '12345',
